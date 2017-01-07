@@ -21,6 +21,8 @@
     (define/public (init-with-size w h)
       (with-gl-context
         (lambda ()
+          (gl-enable 'blend)
+          (gl-blend-func 'src-alpha 'one-minus-src-alpha)
           (gl-viewport 0 0 w h)
           (gl-matrix-mode 'projection)
           (gl-load-identity)
@@ -51,10 +53,13 @@
                      [style '(no-resize-border)])]
          [canv (new game-canvas%
                     [game-ctx (new loading-game-ctx%)]
-                    [parent frame])])
+                    [parent frame])]
+         [icon (make-object bitmap%
+                            "img/icon.png"
+                            'unknown/alpha)])
+    (send frame set-icon icon)
     (send frame show #t)
     (send canv refresh)
-
     (thread
      (lambda ()
        (let loop ()

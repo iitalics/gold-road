@@ -4,6 +4,7 @@
          sgl/bitmap
          data/queue
          "game-ctx.rkt"
+         "playing-ctx.rkt"
          (prefix-in content: "content.rkt"))
 
 (provide loading-game-ctx%)

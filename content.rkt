@@ -12,4 +12,3 @@
   `(("img/ball.png" . ,tex-ball)
     ("img/shadow.png" . ,tex-ball-shadow)
     ("img/platform.png" . ,tex-platform)))
-
