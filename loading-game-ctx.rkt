@@ -21,15 +21,22 @@
       (gl-clear 'color-buffer-bit
                 'depth-buffer-bit)
       (when (non-empty-queue? loading-queue)
-        (match (dequeue! loading-queue)
-          [(cons path param)
-           (let ([bitm (make-object bitmap%
-                                    path
-                                    'png)])
-             (param (bitmap->gl-list bitm))
-             (printf ".. loaded: ~v\n" path))])))
+        (load-texture (dequeue! loading-queue))))
 
     (define/override (tick)
-      this)
+      (if (queue-empty? loading-queue)
+          (new playing-ctx%)
+          this))
           
     ))
+
+(define (load-texture pair)
+  (match pair
+    [(cons texture-path param)
+     (let ([bitmap (make-object bitmap%
+                                texture-path
+                                'png/alpha
+                                #f)])
+       (param (bitmap->gl-list bitmap))
+       (printf ".. loaded: ~v\n" texture-path)
+       (flush-output))]))

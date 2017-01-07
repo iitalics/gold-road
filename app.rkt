@@ -8,9 +8,11 @@
 (define game-canvas%
   (class* canvas% ()
     (inherit swap-gl-buffers with-gl-context
-             min-width min-height)
+             min-width min-height
+             refresh)
 
     (init-field game-ctx)
+    (define/public (get-game-ctx) game-ctx)
 
     (super-new [style '(gl)]
                [min-width window-width]
@@ -33,6 +35,11 @@
           (send game-ctx draw)
           (swap-gl-buffers)
           (gl-flush))))
+
+    (define/public (tick)
+      (set! game-ctx
+            (send game-ctx tick))
+      (refresh))
     
     ))
 
@@ -47,6 +54,14 @@
                     [parent frame])])
     (send frame show #t)
     (send canv refresh)
+
+    (thread
+     (lambda ()
+       (let loop ()
+         (when (send frame is-shown?)
+           (send canv tick)
+           (sleep (/ 1 fps))
+           (loop)))))
     (void)))
 
 
