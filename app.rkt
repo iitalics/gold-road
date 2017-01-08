@@ -22,6 +22,7 @@
       (with-gl-context
         (lambda ()
           (gl-enable 'blend)
+          ;(gl-disable 'depth-test)
           (gl-blend-func 'src-alpha 'one-minus-src-alpha)
           (gl-viewport 0 0 w h)
           (gl-matrix-mode 'projection)
