@@ -14,18 +14,22 @@
     (super-new)
 
     (define loading-queue (make-queue))
-    (for ([x (in-list content:textures)])
-      (enqueue! loading-queue x))
+    (define remaining
+      (for/sum ([x (in-list content:textures)])
+        (enqueue! loading-queue x)
+        1))
     
     (define/override (draw)
-      (gl-clear-color 0.6 0.8 1.0 0)
+      (gl-clear-color 1.0 1.0 1.0 0)
       (gl-clear 'color-buffer-bit
                 'depth-buffer-bit)
       (when (non-empty-queue? loading-queue)
-        (load-texture (dequeue! loading-queue))))
+        (load-texture (dequeue! loading-queue))
+        (set! remaining
+              (sub1 remaining))))
 
     (define/override (tick)
-      (if (queue-empty? loading-queue)
+      (if (<= remaining 0)
           (new playing-ctx%)
           this))
           
@@ -33,11 +37,11 @@
 
 (define (load-texture pair)
   (match pair
-    [(cons texture-path param)
+    [(cons texture-path setter!)
      (let ([bitmap (make-object bitmap%
                                 texture-path
                                 'png/alpha
                                 #f)])
-       (param (bitmap->gl-list bitmap))
+       (setter! (bitmap->gl-list bitmap))
        (printf ".. loaded: ~v\n" texture-path)
        (flush-output))]))
